@@ -69,7 +69,7 @@ class CQT:
         :param length: Length of the window.
         :return: Hamming window.
         """
-        return 0.46 - 0.54 * np.cos(2 * np.pi * np.arange(length) / length)
+        return 0.54 - 0.46 * np.cos(2 * np.pi * np.arange(length) / length)
     
     @staticmethod
     def hanning(length):
