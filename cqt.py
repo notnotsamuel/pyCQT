@@ -60,35 +60,28 @@ class CQT:
             N = np.ceil(self.quality_factor * self.fs / (self.fmin * 2 ** ((k - 1.0) / self.bins)))
             cq += [x[:N].dot(self.window(N) * np.exp(-2 * np.pi * 1j * self.quality_factor * np.arange(N) / N) / N)]
         return np.array(cq)
+    
+    def compute_cqt_fast_frames(self, x, hop_length):
+        num_frames = int(1 + (len(x) - self.fftlen) // hop_length)
+        cqt_result = np.zeros((self.ker.shape[1], num_frames), dtype=np.complex128)
+        for i in range(num_frames):
+            frame = x[i * hop_length : i * hop_length + self.fftlen]
+            cqt_result[:, i] = self.compute_cqt_fast(frame)
+        return cqt_result
+
+    def ker_size(self):
+        return self.ker.shape[1]
 
     @staticmethod
     def hamming(length):
-        """
-        Generate a Hamming window.
-        
-        :param length: Length of the window.
-        :return: Hamming window.
-        """
         return 0.54 - 0.46 * np.cos(2 * np.pi * np.arange(length) / length)
     
     @staticmethod
     def hanning(length):
-        """
-        Generate a Hanning window.
-        
-        :param length: Length of the window.
-        :return: Hanning window.
-        """
         return 0.5 * (1 - np.cos(2 * np.pi * np.arange(length) / length))
     
     @staticmethod
     def blackman(length):
-        """
-        Generate a Blackman window.
-        
-        :param length: Length of the window.
-        :return: Blackman window.
-        """
         return 0.42 - 0.5 * np.cos(2 * np.pi * np.arange(length) / length) + 0.08 * np.cos(4 * np.pi * np.arange(length) / length)
 
 
